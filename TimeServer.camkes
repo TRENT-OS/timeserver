@@ -10,35 +10,99 @@
  * @TAG(DATA61_BSD)
  */
 
+/*
+ *  TimeServer CAmkES Component
+ *
+ *  Copyright (C) 2020, Hensoldt Cyber GmbH
+ *
+ *
+ *  to be used as:
+ *
+ *      #include "TimeServer/TimeServer.camkes"
+ *
+ *      DECLARE_COMPONENT_TimeServer(TimeServer_1)
+ *      DECLARE_COMPONENT_TimeServer(TimeServer_2)
+ *
+ */
+
 #include <plat/timers.h>
 
-import <Timer.idl4>;
-import <PutChar.idl4>;
+import <if_OS_Timer.camkes>;
+
+import <global-connectors.camkes>;
 import <timers.camkes>;
+
+//------------------------------------------------------------------------------
+// Component
 
 #ifdef HARDWARE_TIMER_COMPONENT
     HARDWARE_TIMER_COMPONENT
 #endif
 
-component TimeServer {
-    has mutex time_server;
-    maybe uses PutChar putchar;
-
-    emits Notification timer_notification;
-
-    provides Timer the_timer;
-
-    attribute int timers_per_client;
-    attribute int heap_size = 8192;
-
-    HARDWARE_TIMER_INTERFACES
-    HARDWARE_TIMER_ATTRIBUTES
-
-    composition {
-        HARDWARE_TIMER_COMPOSITION
+#define DECLARE_COMPONENT_TimeServer(           \
+    _name_)                                     \
+                                                \
+    component _name_ {                          \
+        has mutex time_server;                  \
+                                                \
+        emits Notification timer_notification;  \
+                                                \
+        provides if_OS_Timer the_timer;         \
+                                                \
+        attribute int timers_per_client = 1;    \
+        attribute int heap_size = 8192;         \
+                                                \
+        HARDWARE_TIMER_INTERFACES               \
+        HARDWARE_TIMER_ATTRIBUTES               \
+                                                \
+        composition {                           \
+            HARDWARE_TIMER_COMPOSITION          \
+        }                                       \
+                                                \
+        configuration {                         \
+            HARDWARE_TIMER_CONFIG               \
+        }                                       \
     }
 
-    configuration {
-        HARDWARE_TIMER_CONFIG
-    }
-}
+
+//------------------------------------------------------------------------------
+// Instance Connection
+
+// Instantiate the connection as often as we have instances
+#define FE_0(WHAT, N,I)
+#define FE_1(WHAT, N,I,X)      WHAT(N,I,X,1)
+#define FE_2(WHAT, N,I,X, ...) WHAT(N,I,X,2) FE_1(WHAT, N,I, __VA_ARGS__)
+#define FE_3(WHAT, N,I,X, ...) WHAT(N,I,X,3) FE_2(WHAT, N,I, __VA_ARGS__)
+#define FE_4(WHAT, N,I,X, ...) WHAT(N,I,X,4) FE_3(WHAT, N,I, __VA_ARGS__)
+#define FE_5(WHAT, N,I,X, ...) WHAT(N,I,X,5) FE_4(WHAT, N,I, __VA_ARGS__)
+#define FE_6(WHAT, N,I,X, ...) WHAT(N,I,X,6) FE_5(WHAT, N,I, __VA_ARGS__)
+#define FE_7(WHAT, N,I,X, ...) WHAT(N,I,X,7) FE_6(WHAT, N,I, __VA_ARGS__)
+#define GET_MACRO(_0,_1,_2,_3,_4,_5,_6,_7,NAME,...) NAME
+#define FOR_EACH(action, _name_, _inst_, ...) \
+  GET_MACRO(_0,__VA_ARGS__,FE_7,FE_6,FE_5,FE_4,FE_3,FE_2,FE_1,FE_0)(action,_name_,_inst_,__VA_ARGS__)
+
+// Set a single connection
+#define CONNECTION(_name_, _inst_, _caller_rpc_, _num_)     \
+    connection  seL4TimeServer                              \
+        _name_ ## _ ## _inst_ ## _num_ ## _rpc(             \
+            from    _caller_rpc_,                           \
+            to      _inst_.the_timer);
+
+/*
+ * With the macro magic above we can use this macro with more than one
+ * client, i.e.,
+ *
+ *      DECLARE_AND_CONNECT_INSTANCE_TimeServer(
+ *          TimeServer,
+ *          timeServer,
+ *          client0.the_timer,
+ *          client1.the_timer)
+ */
+#define DECLARE_AND_CONNECT_INSTANCE_TimeServer(        \
+    _name_,                                             \
+    _inst_,                                             \
+    ...)                                                \
+                                                        \
+    component   _name_  _inst_;                         \
+                                                        \
+    FOR_EACH(CONNECTION, _name_, _inst_, __VA_ARGS__)

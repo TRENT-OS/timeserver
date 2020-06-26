@@ -249,6 +249,4 @@ void post_init()
 
     error = time_server_unlock();
     ZF_LOGF_IF(error, "Failed to unlock timer server");
-
-    set_putchar(putchar_putchar);
 }
