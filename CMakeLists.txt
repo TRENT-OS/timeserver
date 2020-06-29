@@ -60,4 +60,18 @@ macro(DeclareCAmkESComponent_TimeServer name)
 
     CAmkESAddCPPInclude("${COMPONENT_TIMESERVER_DIR}/include/plat/${PlatPrefix}/")
 
+    #---------------------------------------------------------------------------
+    # create the corresponding client project, which every client of this
+    # time server instance must include. We do not define this globally,
+    # because the clients may have server specific configurations in the
+    # future.
+    project(${name}_client C)
+
+    add_library(${PROJECT_NAME} INTERFACE)
+
+    target_include_directories(${PROJECT_NAME}
+        INTERFACE
+            ${COMPONENT_TIMESERVER_DIR}/include
+    )
+
 endmacro()
