@@ -43,11 +43,11 @@ import <timers.camkes>;
     _name_)                                     \
                                                 \
     component _name_ {                          \
-        has mutex time_server;                  \
+        has mutex clientMux;                    \
                                                 \
         emits Notification timer_notification;  \
                                                 \
-        provides if_OS_Timer the_timer;         \
+        provides if_OS_Timer timeServer_rpc;    \
                                                 \
         attribute int timers_per_client = 1;    \
         attribute int heap_size = 8192;         \
@@ -86,7 +86,7 @@ import <timers.camkes>;
     connection  seL4TimeServer                              \
         _name_ ## _ ## _inst_ ## _num_ ## _rpc(             \
             from    _caller_rpc_,                           \
-            to      _inst_.the_timer);
+            to      _inst_.timeServer_rpc);
 
 /*
  * With the macro magic above we can use this macro with more than one
@@ -95,8 +95,8 @@ import <timers.camkes>;
  *      DECLARE_AND_CONNECT_INSTANCE_TimeServer(
  *          TimeServer,
  *          timeServer,
- *          client0.the_timer,
- *          client1.the_timer)
+ *          client0.timeServer_rpc,
+ *          client1.timeServer_rpc)
  */
 #define DECLARE_AND_CONNECT_INSTANCE_TimeServer(        \
     _name_,                                             \

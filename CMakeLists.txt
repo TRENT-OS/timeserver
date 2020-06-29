@@ -49,11 +49,12 @@ macro(DeclareCAmkESComponent_TimeServer name)
     DeclareCAmkESComponent(
         ${name}
         SOURCES
-            ${COMPONENT_TIMESERVER_DIR}/src/time_server.c
+            ${COMPONENT_TIMESERVER_DIR}/src/TimeServer.c
             ${TimeServerPlatSources}
         C_FLAGS
             -Wall
             -Werror
+            # Fix some compiler error
             -Wno-unused-const-variable
     )
 
