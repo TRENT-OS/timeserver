@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.8.2)
 # create a global variable here and then use this in the macro below. Note that
 # we do this, so we don't require anybody else to provide any helper variables,
 # this CMake file becomes fully self-contained and is "copy&paste safe".
-set(COMPONENT_TIMESERVER_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(OS_COMPONENT_TimeServer_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 
 #-------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ macro(DeclareCAmkESComponent_TimeServer
     if("${KernelPlatform}" STREQUAL "pc99")
         list(APPEND
              TimeServerPlatSources
-             ${COMPONENT_TIMESERVER_DIR}/src/plat/pc99/plat.c)
+             ${OS_COMPONENT_TimeServer_DIR}/src/plat/pc99/plat.c)
     endif()
 
     # The imx8 boards (imx8mm-evk, imx8mq-evk) share the same timer device
@@ -66,7 +66,7 @@ macro(DeclareCAmkESComponent_TimeServer
     DeclareCAmkESComponent(
         ${name}
         SOURCES
-            ${COMPONENT_TIMESERVER_DIR}/src/TimeServer.c
+            ${OS_COMPONENT_TimeServer_DIR}/src/TimeServer.c
             ${TimeServerPlatSources}
         C_FLAGS
             -Wall
@@ -75,7 +75,7 @@ macro(DeclareCAmkESComponent_TimeServer
             -Wno-unused-const-variable
     )
 
-    CAmkESAddCPPInclude("${COMPONENT_TIMESERVER_DIR}/include/plat/${PlatPrefix}/")
+    CAmkESAddCPPInclude("${OS_COMPONENT_TimeServer_DIR}/include/plat/${PlatPrefix}/")
 
     #---------------------------------------------------------------------------
     # create the corresponding client project, which every client of this
@@ -88,7 +88,7 @@ macro(DeclareCAmkESComponent_TimeServer
 
     target_include_directories(${PROJECT_NAME}
         INTERFACE
-            ${COMPONENT_TIMESERVER_DIR}/include
+            ${OS_COMPONENT_TimeServer_DIR}/include
     )
 
 endmacro()
