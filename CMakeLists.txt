@@ -41,7 +41,7 @@ set(
 #     component instance name. The server will be called "<name>" and the
 #     corresponding client library will be called "<name>_client"
 #
-macro(DeclareCAmkESComponent_TimeServer
+function(DeclareCAmkESComponent_TimeServer
     name
 )
 
@@ -99,4 +99,4 @@ macro(DeclareCAmkESComponent_TimeServer
             ${OS_COMPONENT_TimeServer_DIR}/include
     )
 
-endmacro()
+endfunction()
