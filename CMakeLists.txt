@@ -52,7 +52,7 @@ macro(DeclareCAmkESComponent_TimeServer
     if("${KernelPlatform}" STREQUAL "pc99")
         list(APPEND
              TimeServerPlatSources
-             ${COMPONENT_TIMESERVER_DIR}src/plat/pc99/plat.c)
+             ${COMPONENT_TIMESERVER_DIR}/src/plat/pc99/plat.c)
     endif()
 
     # The imx8 boards (imx8mm-evk, imx8mq-evk) share the same timer device
