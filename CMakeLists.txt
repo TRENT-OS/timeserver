@@ -54,9 +54,11 @@ macro(DeclareCAmkESComponent_TimeServer
     # but just to play safe we ensure once more here that it is enabled.
     set(CAmkESCPP ON CACHE BOOL "" FORCE)
 
+    set(OS_COMPONENT_TimeServer_PLAT_SOURCES "")
     if("${KernelPlatform}" STREQUAL "pc99")
-        list(APPEND
-             TimeServerPlatSources
+        list(
+            APPEND
+            OS_COMPONENT_TimeServer_PLAT_SROURCES
              ${OS_COMPONENT_TimeServer_DIR}/src/plat/pc99/plat.c)
     endif()
 
@@ -72,7 +74,7 @@ macro(DeclareCAmkESComponent_TimeServer
         ${name}
         SOURCES
             ${OS_COMPONENT_TimeServer_DIR}/src/TimeServer.c
-            ${TimeServerPlatSources}
+            ${OS_COMPONENT_TimeServer_PLAT_SROURCES}
         C_FLAGS
             -Wall
             -Werror
