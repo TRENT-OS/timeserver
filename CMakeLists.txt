@@ -26,7 +26,10 @@ cmake_minimum_required(VERSION 3.8.2)
 set(COMPONENT_TIMESERVER_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 
-macro(DeclareCAmkESComponent_TimeServer name)
+#-------------------------------------------------------------------------------
+macro(DeclareCAmkESComponent_TimeServer
+    name
+)
 
     if(KernelArchARM)
         set(CAmkESDTS ON CACHE BOOL "" FORCE)
@@ -39,7 +42,8 @@ macro(DeclareCAmkESComponent_TimeServer name)
              ${COMPONENT_TIMESERVER_DIR}src/plat/pc99/plat.c)
     endif()
 
-    # The imx8 boards (imx8mm-evk, imx8mq-evk) share the same timer device configuration
+    # The imx8 boards (imx8mm-evk, imx8mq-evk) share the same timer device
+    # configuration
     if("${KernelPlatform}" MATCHES "imx8.*")
         set(PlatPrefix "imx8")
     else()
