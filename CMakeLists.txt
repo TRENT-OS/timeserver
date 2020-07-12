@@ -54,20 +54,23 @@ macro(DeclareCAmkESComponent_TimeServer
     # but just to play safe we ensure once more here that it is enabled.
     set(CAmkESCPP ON CACHE BOOL "" FORCE)
 
+    # The imx8 boards (imx8mm-evk, imx8mq-evk) share the same timer device
+    # configuration
+    if("${KernelPlatform}" MATCHES "imx8.*")
+        set(OS_COMPONENT_TimeServer_PLAT_INC "imx8")
+    else()
+        set(OS_COMPONENT_TimeServer_PLAT_INC "${KernelPlatform}")
+    endif()
+    CAmkESAddCPPInclude(
+        "${OS_COMPONENT_TimeServer_DIR}/include/plat/${OS_COMPONENT_TimeServer_PLAT_INC}"
+    )
+
     set(OS_COMPONENT_TimeServer_PLAT_SOURCES "")
     if("${KernelPlatform}" STREQUAL "pc99")
         list(
             APPEND
             OS_COMPONENT_TimeServer_PLAT_SROURCES
              ${OS_COMPONENT_TimeServer_DIR}/src/plat/pc99/plat.c)
-    endif()
-
-    # The imx8 boards (imx8mm-evk, imx8mq-evk) share the same timer device
-    # configuration
-    if("${KernelPlatform}" MATCHES "imx8.*")
-        set(PlatPrefix "imx8")
-    else()
-        set(PlatPrefix "${KernelPlatform}")
     endif()
 
     DeclareCAmkESComponent(
@@ -81,8 +84,6 @@ macro(DeclareCAmkESComponent_TimeServer
             # Fix some compiler error
             -Wno-unused-const-variable
     )
-
-    CAmkESAddCPPInclude("${OS_COMPONENT_TimeServer_DIR}/include/plat/${PlatPrefix}/")
 
     #---------------------------------------------------------------------------
     # create the corresponding client project, which every client of this
