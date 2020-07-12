@@ -27,6 +27,15 @@ set(COMPONENT_TIMESERVER_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 
 #-------------------------------------------------------------------------------
+#
+# Declare TimeServer CAmkES Component
+#
+# Parameters:
+#
+#   <name>
+#     component instance name. The server will be called "<name>" and the
+#     corresponding client library will be called "<name>_client"
+#
 macro(DeclareCAmkESComponent_TimeServer
     name
 )
@@ -34,6 +43,10 @@ macro(DeclareCAmkESComponent_TimeServer
     if(KernelArchARM)
         set(CAmkESDTS ON CACHE BOOL "" FORCE)
     endif()
+
+    # running CAMkES files though the C pre processor should be enabled by
+    # default in the seL4/CAmkES build system and the SDK also enables this,
+    # but just to play safe we ensure once more here that it is enabled.
     set(CAmkESCPP ON CACHE BOOL "" FORCE)
 
     if("${KernelPlatform}" STREQUAL "pc99")
