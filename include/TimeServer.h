@@ -33,6 +33,7 @@ seL4_CPtr timeServer_rpc_notification(
  * @param prec (required) precision of timer value
  * @param val (required) time to sleep
  */
+__attribute__((unused))
 static inline void
 TimeServer_sleep(
     const TimeServer_Precision_t prec,
@@ -71,6 +72,7 @@ TimeServer_sleep(
  *
  * @return Timestamp in selected precision
  */
+__attribute__((unused))
 static inline uint64_t
 TimeServer_getTime(
     const TimeServer_Precision_t prec)
