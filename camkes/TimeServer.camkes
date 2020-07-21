@@ -49,7 +49,7 @@ import <timers.camkes>;
                                                 \
         provides if_OS_Timer timeServer_rpc;    \
                                                 \
-        attribute int timers_per_client = 1;    \
+        attribute int timers_per_client = 4;    \
         attribute int heap_size = 8192;         \
                                                 \
         HARDWARE_TIMER_INTERFACES               \
