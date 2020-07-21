@@ -107,3 +107,13 @@ import <timers.camkes>;
     component   _name_  _inst_;                                             \
                                                                             \
     TimeServer_FOR_EACH(TimeServer_CONNECTION, _name_, _inst_, __VA_ARGS__)
+
+
+//------------------------------------------------------------------------------
+// Configuration of instance
+
+#define CONFIGURE_INSTANCE_TimeServer(          \
+    _inst_,                                     \
+    _num_clients_)                              \
+                                                \
+    _inst_.timers_per_client = _num_clients_;
