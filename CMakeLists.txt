@@ -62,7 +62,7 @@ function(DeclareCAmkESComponent_TimeServer
         set(OS_COMPONENT_TimeServer_PLAT_INC "${KernelPlatform}")
     endif()
     CAmkESAddCPPInclude(
-        "${OS_COMPONENT_TimeServer_DIR}/include/plat/${OS_COMPONENT_TimeServer_PLAT_INC}"
+        "${OS_COMPONENT_TimeServer_DIR}/server/include/plat/${OS_COMPONENT_TimeServer_PLAT_INC}"
     )
 
     set(OS_COMPONENT_TimeServer_PLAT_SOURCES "")
@@ -70,13 +70,13 @@ function(DeclareCAmkESComponent_TimeServer
         list(
             APPEND
             OS_COMPONENT_TimeServer_PLAT_SROURCES
-             ${OS_COMPONENT_TimeServer_DIR}/src/plat/pc99/plat.c)
+            ${OS_COMPONENT_TimeServer_DIR}/server/src/plat/pc99/plat.c)
     endif()
 
     DeclareCAmkESComponent(
         ${name}
         SOURCES
-            ${OS_COMPONENT_TimeServer_DIR}/src/TimeServer.c
+            ${OS_COMPONENT_TimeServer_DIR}/server/src/TimeServer.c
             ${OS_COMPONENT_TimeServer_PLAT_SROURCES}
         C_FLAGS
             -Wall
@@ -96,7 +96,7 @@ function(DeclareCAmkESComponent_TimeServer
 
     target_include_directories(${PROJECT_NAME}
         INTERFACE
-            ${OS_COMPONENT_TimeServer_DIR}/include
+            ${OS_COMPONENT_TimeServer_DIR}/client/include
     )
 
 endfunction()
