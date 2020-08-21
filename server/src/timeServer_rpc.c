@@ -35,6 +35,8 @@
 #include <simple/simple.h>
 #include <camkes/io.h>
 
+#include "OS_Error.h"
+
 #include "plat.h"
 
 #ifdef CONFIG_PLAT_ZYNQ7000
@@ -94,7 +96,6 @@ static int
 signalClient(
     uintptr_t token)
 {
-
     int cid = ((int) token) / timers_per_client;
     int tid = ((int) token) % timers_per_client;
 
@@ -121,7 +122,7 @@ timerHandler(
     ZF_LOGF_IF(error, "Failed to unlock time server");
 }
 
-static int
+static OS_Error_t
 _oneshot_relative(
     int      cid,
     int      tid,
@@ -130,7 +131,7 @@ _oneshot_relative(
     if (tid >= timers_per_client || tid < 0)
     {
         ZF_LOGE("invalid tid, 0 >= %d >= %d\n", tid, timers_per_client);
-        return -1;
+        return OS_ERROR_INVALID_PARAMETER;
     }
 
     int error = clientMux_lock();
@@ -147,10 +148,11 @@ _oneshot_relative(
 
     error = clientMux_unlock();
     ZF_LOGF_IF(error, "Failed to unlock time server");
-    return 0;
+
+    return OS_SUCCESS;
 }
 
-static int
+static OS_Error_t
 _oneshot_absolute(
     int      cid,
     int      tid,
@@ -159,7 +161,7 @@ _oneshot_absolute(
     if (tid >= timers_per_client || tid < 0)
     {
         ZF_LOGE("invalid tid, 0 >= %d >= %d\n", tid, timers_per_client);
-        return -1;
+        return OS_ERROR_INVALID_PARAMETER;
     }
 
     int error = clientMux_lock();
@@ -182,10 +184,11 @@ _oneshot_absolute(
 
     error = clientMux_unlock();
     ZF_LOGF_IF(error, "Failed to unlock time server");
-    return 0;
+
+    return OS_SUCCESS;
 }
 
-static int
+static OS_Error_t
 _periodic(
     int      cid,
     int      tid,
@@ -194,7 +197,7 @@ _periodic(
     if (tid >= timers_per_client || tid < 0)
     {
         ZF_LOGE("invalid tid, 0 >= %d >= %d\n", tid, timers_per_client);
-        return -1;
+        return OS_ERROR_INVALID_PARAMETER;
     }
 
     int error = clientMux_lock();
@@ -215,10 +218,11 @@ _periodic(
 
     error = clientMux_unlock();
     ZF_LOGF_IF(error, "Failed to unlock time server");
-    return 0;
+
+    return OS_SUCCESS;
 }
 
-static int
+static OS_Error_t
 _stop(
     int cid,
     int tid)
@@ -226,8 +230,9 @@ _stop(
     if (tid >= timers_per_client || tid < 0)
     {
         ZF_LOGE("invalid tid, 0 >= %d >= %d\n", tid, timers_per_client);
-        return -1;
+        return OS_ERROR_INVALID_PARAMETER;
     }
+
     int error = clientMux_lock();
     ZF_LOGF_IF(error, "Failed to lock time server");
 
@@ -236,45 +241,56 @@ _stop(
 
     error = clientMux_unlock();
     ZF_LOGF_IF(error, "Failed to unlock time server");
-    return 0;
+
+    return OS_SUCCESS;
 }
 
-static unsigned int
+static OS_Error_t
 _completed(
-    int cid)
+    int cid,
+    uint32_t* tmr)
 {
+    if (NULL == tmr)
+    {
+        return OS_ERROR_INVALID_PARAMETER;
+    }
+
     int error = clientMux_lock();
     ZF_LOGF_IF(error, "Failed to lock time server");
 
     assert(client_state != NULL);
-    unsigned int ret = client_state[cid];
+    *tmr = client_state[cid];
     client_state[cid] = 0;
 
     error = clientMux_unlock();
     ZF_LOGF_IF(error, "Failed to unlock time server");
 
-    return ret;
+    return OS_SUCCESS;
 }
 
-static uint64_t
+static OS_Error_t
 _time(
-    int cid)
+    int cid,
+    uint64_t* ns)
 {
-    return currentTimeNs();
+    *ns  = currentTimeNs();
+
+    return OS_SUCCESS;
 }
 
 // Public Functions -----------------------------------------------------------
 
 /* substract 1 from the badge as we started counting badges at 1
  * to avoid using the 0 badge */
-int timeServer_rpc_oneshot_relative(
+OS_Error_t
+timeServer_rpc_oneshot_relative(
     int      id,
     uint64_t ns)
 {
     return _oneshot_relative(timeServer_rpc_get_sender_id() - 1, id, ns);
 }
 
-int
+OS_Error_t
 timeServer_rpc_oneshot_absolute(
     int      id,
     uint64_t ns)
@@ -282,7 +298,7 @@ timeServer_rpc_oneshot_absolute(
     return _oneshot_absolute(timeServer_rpc_get_sender_id() - 1, id, ns);
 }
 
-int
+OS_Error_t
 timeServer_rpc_periodic(
     int      id,
     uint64_t ns)
@@ -290,25 +306,25 @@ timeServer_rpc_periodic(
     return _periodic(timeServer_rpc_get_sender_id() - 1, id, ns);
 }
 
-int
+OS_Error_t
 timeServer_rpc_stop(
     int id)
 {
     return _stop(timeServer_rpc_get_sender_id() - 1, id);
 }
 
-unsigned int
+OS_Error_t
 timeServer_rpc_completed(
-    void)
+    uint32_t* tmr)
 {
-    return _completed(timeServer_rpc_get_sender_id() - 1);
+    return _completed(timeServer_rpc_get_sender_id() - 1, tmr);
 }
 
-uint64_t
+OS_Error_t
 timeServer_rpc_time(
-    void)
+    uint64_t* ns)
 {
-    return _time(timeServer_rpc_get_sender_id() - 1);
+    return _time(timeServer_rpc_get_sender_id() - 1, ns);
 }
 
 void

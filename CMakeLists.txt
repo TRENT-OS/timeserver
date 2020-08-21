@@ -83,6 +83,8 @@ function(DeclareCAmkESComponent_TimeServer
             -Werror
             # Fix some compiler error
             -Wno-unused-const-variable
+        LIBS
+            os_core_api
     )
 
     #---------------------------------------------------------------------------

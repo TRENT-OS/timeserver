@@ -1,5 +1,7 @@
 /* Copyright (C) 2020, Hensoldt Cyber GmbH */
 
+#include "OS_Error.h"
+
 #include "TimeServer.h"
 
 #include <stdint.h>
@@ -37,28 +39,33 @@ TimeServer_sleep(
         return;
     }
 
-    timeServer_rpc_oneshot_relative(0, ns);
-    seL4_Wait(notification, &badge);
+    if (timeServer_rpc_oneshot_relative(0, ns) == OS_SUCCESS)
+    {
+        seL4_Wait(notification, &badge);
+    }
 }
 
 uint64_t
 TimeServer_getTime(
     const TimeServer_Precision_t prec)
 {
-    uint64_t ns = timeServer_rpc_time();
+    uint64_t ns;
 
-    switch (prec)
+    if (timeServer_rpc_time(&ns) == OS_SUCCESS)
     {
-    case TimeServer_PRECISION_SEC:
-        return ns / NS_IN_S;
-    case TimeServer_PRECISION_MSEC:
-        return ns / NS_IN_MS;
-    case TimeServer_PRECISION_USEC:
-        return ns / NS_IN_US;
-    case TimeServer_PRECISION_NSEC:
-        return ns;
-    default:
-        break;
+        switch (prec)
+        {
+        case TimeServer_PRECISION_SEC:
+            return ns / NS_IN_S;
+        case TimeServer_PRECISION_MSEC:
+            return ns / NS_IN_MS;
+        case TimeServer_PRECISION_USEC:
+            return ns / NS_IN_US;
+        case TimeServer_PRECISION_NSEC:
+            return ns;
+        default:
+            break;
+        }
     }
 
     return 0;
