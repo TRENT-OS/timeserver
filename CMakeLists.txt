@@ -76,7 +76,7 @@ function(DeclareCAmkESComponent_TimeServer
     DeclareCAmkESComponent(
         ${name}
         SOURCES
-            ${OS_COMPONENT_TimeServer_DIR}/server/src/TimeServer.c
+            ${OS_COMPONENT_TimeServer_DIR}/server/src/timeServer_rpc.c
             ${OS_COMPONENT_TimeServer_PLAT_SROURCES}
         C_FLAGS
             -Wall
