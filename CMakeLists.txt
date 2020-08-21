@@ -94,6 +94,11 @@ function(DeclareCAmkESComponent_TimeServer
 
     add_library(${PROJECT_NAME} INTERFACE)
 
+    target_sources(${PROJECT_NAME}
+        INTERFACE
+            ${OS_COMPONENT_TimeServer_DIR}/client/src/TimeServer.c
+    )
+
     target_include_directories(${PROJECT_NAME}
         INTERFACE
             ${OS_COMPONENT_TimeServer_DIR}/client/include
