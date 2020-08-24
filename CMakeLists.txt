@@ -85,6 +85,7 @@ function(DeclareCAmkESComponent_TimeServer
             -Wno-unused-const-variable
         LIBS
             os_core_api
+            os_libs
     )
 
     #---------------------------------------------------------------------------
