@@ -73,22 +73,84 @@ import <timers.camkes>;
 //------------------------------------------------------------------------------
 // Instance Connection
 
-#define TimeServer_FE_0(WHAT, N,I)
-#define TimeServer_FE_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,1)
-#define TimeServer_FE_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
-    TimeServer_FE_2(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
-    TimeServer_FE_3(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
-    TimeServer_FE_4(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_6(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,6) \
-    TimeServer_FE_5(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_7(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,7) \
-    TimeServer_FE_6(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,8) \
-    TimeServer_FE_7(WHAT, N,I, __VA_ARGS__)
+// In contrast to the usual FE macro construction, we need to have a separate
+// FE chain for every possible number of clients, because we need to make sure
+// that the first element in the list is always assigned the ID=1, then ID=2,
+// etc.
+
+// ------------------------------------------------------------
+#define TimeServer_FE_8_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,8)
+#define TimeServer_FE_8_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,7) \
+    TimeServer_FE_8_1(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_8_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,6) \
+    TimeServer_FE_8_2(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_8_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
+    TimeServer_FE_8_3(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_8_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
+    TimeServer_FE_8_4(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_8_6(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
+    TimeServer_FE_8_5(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_8_7(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
+    TimeServer_FE_8_6(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_8(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_8_7(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_7_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,7)
+#define TimeServer_FE_7_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,6) \
+    TimeServer_FE_7_1(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_7_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
+    TimeServer_FE_7_2(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_7_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
+    TimeServer_FE_7_3(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_7_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
+    TimeServer_FE_7_4(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_7_6(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
+    TimeServer_FE_7_5(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_7(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_7_6(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_6_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,6)
+#define TimeServer_FE_6_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
+    TimeServer_FE_6_1(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_6_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
+    TimeServer_FE_6_2(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_6_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
+    TimeServer_FE_6_3(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_6_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
+    TimeServer_FE_6_4(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_6(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_6_5(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_5_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,5)
+#define TimeServer_FE_5_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
+    TimeServer_FE_5_1(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_5_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
+    TimeServer_FE_5_2(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_5_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
+    TimeServer_FE_5_3(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_5(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_5_4(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_4_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,4)
+#define TimeServer_FE_4_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
+    TimeServer_FE_4_1(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_4_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
+    TimeServer_FE_4_2(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_4(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_4_3(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_3_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,3)
+#define TimeServer_FE_3_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
+    TimeServer_FE_3_1(WHAT, N,I, __VA_ARGS__)
+#define TimeServer_FE_3(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_3_2(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_2_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,2)
+#define TimeServer_FE_2(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
+    TimeServer_FE_2_1(WHAT, N,I, __VA_ARGS__)
+// ------------------------------------------------------------
+#define TimeServer_FE_1(WHAT, N,I,R,E)        WHAT(N,I,R,E,1)
+
 #define TimeServer_GET_MACRO(_00,    \
     _10,_11,_20,_21,_30,_31,_40,_41,    \
     _50,_51,_60,_61,_70,_71,_80,_81,    \
