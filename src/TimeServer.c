@@ -67,6 +67,9 @@ currentTimeNs(
     int error = ltimer_get_time(&ltimer, &time);
     ZF_LOGF_IF(error, "Failed to get time");
 
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 7),
+	      (time >> 32) & 0xffffffffU, time & 0xffffffffU, 0);
+
     return time;
 }
 
@@ -78,13 +81,19 @@ getTimeToken(
     return (unsigned int) cid * timers_per_client + tid;
 }
 
+
+static uint64_t _time(int cid);
+
 static int
 signalClient(
     uintptr_t token)
 {
-
     int cid = ((int) token) / timers_per_client;
     int tid = ((int) token) % timers_per_client;
+    uint64_t time =  _time(timeServer_rpc_get_sender_id() - 1);
+
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 5),
+        token, (time >> 32) & 0xffffffffU, time & 0xffffffffU);
 
     assert(client_state != NULL);
 
@@ -100,6 +109,8 @@ timerHandler(
     ltimer_event_t lTimerEvent)
 {
     int error = clientMux_lock();
+
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 6), 0, 0, 0);
     ZF_LOGF_IF(error, "Failed to lock time server");
 
     error = tm_update(&timeManager);
@@ -243,6 +254,9 @@ int timeServer_rpc_oneshot_relative(
     int      id,
     uint64_t ns)
 {
+
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER_RPC, 0),
+	      getTimeToken(timeServer_rpc_get_sender_id() - 1, id), (ns >> 32) & 0xffffffffU, ns & 0xffffffffU);
     return _oneshot_relative(timeServer_rpc_get_sender_id() - 1, id, ns);
 }
 
@@ -251,14 +265,22 @@ timeServer_rpc_oneshot_absolute(
     int      id,
     uint64_t ns)
 {
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER_RPC, 1),
+	      getTimeToken(timeServer_rpc_get_sender_id() - 1, id),
+        (ns >> 32) & 0xffffffffU, ns & 0xffffffffU);
     return _oneshot_absolute(timeServer_rpc_get_sender_id() - 1, id, ns);
 }
+
 
 int
 timeServer_rpc_periodic(
     int      id,
     uint64_t ns)
 {
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER_RPC, 2),
+	      getTimeToken(timeServer_rpc_get_sender_id() - 1, id),
+        (ns >> 32) & 0xffffffffU, ns & 0xffffffffU);
+
     return _periodic(timeServer_rpc_get_sender_id() - 1, id, ns);
 }
 
@@ -266,6 +288,10 @@ int
 timeServer_rpc_stop(
     int id)
 {
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER_RPC, 5),
+	       getTimeToken(timeServer_rpc_get_sender_id() - 1, id),
+         0, 0);
+
     return _stop(timeServer_rpc_get_sender_id() - 1, id);
 }
 
@@ -273,6 +299,10 @@ unsigned int
 timeServer_rpc_completed(
     void)
 {
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER_RPC, 4),
+        timeServer_rpc_get_sender_id() - 1,
+        0, 0);
+
     return _completed(timeServer_rpc_get_sender_id() - 1);
 }
 
@@ -280,13 +310,23 @@ uint64_t
 timeServer_rpc_time(
     void)
 {
-    return _time(timeServer_rpc_get_sender_id() - 1);
+    uint64_t time =  _time(timeServer_rpc_get_sender_id() - 1);
+
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER_RPC, 3),
+	      timeServer_rpc_get_sender_id() - 1,
+        (time >> 32) & 0xffffffffU, time & 0xffffffffU);
+
+    return time;
+  // return _time(timeServer_rpc_get_sender_id() - 1);
 }
 
 void
 post_init(
     void)
 {
+   log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 0),
+	     0, 0, 0);
+
     int error = clientMux_lock();
     ZF_LOGF_IF(error, "Failed to lock timer server");
 
@@ -297,18 +337,29 @@ post_init(
                       sizeof(*client_state), (void**) &client_state);
     ZF_LOGF_IF(error, "Failed to allocate client state");
 
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 1),
+        0, 0, 0);
+
     if (plat_pre_init)
     {
         plat_pre_init();
     }
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 2),
+        0, 0, 0);
 
     error = ltimer_default_init(&ltimer, io_ops, timerHandler, NULL);
     ZF_LOGF_IF(error, "Failed to init timer");
+
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 3),
+        0, 0, 0);
 
     if (plat_post_init)
     {
         plat_post_init(&ltimer);
     }
+
+    log32v(LOG_ID(LOG_MAJ_TIMESERVER,LOG_SUB_TIMERSERVER, 4),
+        0, 0, 0);
 
     int num_timers = timers_per_client * timeServer_rpc_largest_badge();
     tm_init(&timeManager, &ltimer, &io_ops, num_timers);
