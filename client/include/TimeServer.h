@@ -29,8 +29,14 @@ typedef enum
  * @param rpc (required) pointer to if_OS_Timer rpc struct
  * @param prec (required) precision of timer value
  * @param val (required) time to sleep
- */
-void
+ *
+ * @return an error code
+ * @retval OS_SUCCESS if operation succeeded
+ * @retval OS_ERROR_INVALID_PARAMETER if a parameter was missing or invalid
+ * @retval OS_ERROR_NOT_FOUND if TimeServer could not find corresponding
+ *  client state
+  */
+OS_Error_t
 TimeServer_sleep(
     const if_OS_Timer_t*         rpc,
     const TimeServer_Precision_t prec,
@@ -41,12 +47,18 @@ TimeServer_sleep(
  *
  * @param rpc (required) pointer to if_OS_Timer rpc struct
  * @param prec (required) precision of current time
+ * @param val (required) pointer to time value
  *
- * @return Timestamp in selected precision
+ * @return an error code
+ * @retval OS_SUCCESS if operation succeeded
+ * @retval OS_ERROR_INVALID_PARAMETER if a parameter was missing or invalid
+ * @retval OS_ERROR_NOT_FOUND if TimeServer could not find corresponding
+ *  client state
  */
-uint64_t
+OS_Error_t
 TimeServer_getTime(
     const if_OS_Timer_t*         rpc,
-    const TimeServer_Precision_t prec);
+    const TimeServer_Precision_t prec,
+    uint64_t*                    val);
 
 /** @} */

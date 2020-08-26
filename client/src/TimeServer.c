@@ -6,17 +6,18 @@
 
 #include <stdint.h>
 
-void
+OS_Error_t
 TimeServer_sleep(
     const if_OS_Timer_t*         rpc,
     const TimeServer_Precision_t prec,
     const uint64_t               val)
 {
+    OS_Error_t err;
     uint64_t ns;
 
     if (NULL == rpc)
     {
-        return;
+        return OS_ERROR_INVALID_PARAMETER;
     }
 
     switch (prec)
@@ -34,43 +35,55 @@ TimeServer_sleep(
         ns = val;
         break;
     default:
-        return;
+        return OS_ERROR_INVALID_PARAMETER;
     }
 
-    if (rpc->oneshot_relative(0, ns) == OS_SUCCESS)
+    if ((err = rpc->oneshot_relative(0, ns)) != OS_SUCCESS)
     {
-        rpc->notify_wait();
+        return err;
     }
+
+    rpc->notify_wait();
+
+    return OS_SUCCESS;
 }
 
-uint64_t
+OS_Error_t
 TimeServer_getTime(
     const if_OS_Timer_t*         rpc,
-    const TimeServer_Precision_t prec)
+    const TimeServer_Precision_t prec,
+    uint64_t*                    val)
 {
+    OS_Error_t err;
     uint64_t ns;
 
     if (NULL == rpc)
     {
-        return 0;
+        return OS_ERROR_INVALID_PARAMETER;
     }
 
-    if (rpc->time(&ns) == OS_SUCCESS)
+    if ((err = rpc->time(&ns)) != OS_SUCCESS)
     {
-        switch (prec)
-        {
-        case TimeServer_PRECISION_SEC:
-            return ns / NS_IN_S;
-        case TimeServer_PRECISION_MSEC:
-            return ns / NS_IN_MS;
-        case TimeServer_PRECISION_USEC:
-            return ns / NS_IN_US;
-        case TimeServer_PRECISION_NSEC:
-            return ns;
-        default:
-            break;
-        }
+        return err;
     }
 
-    return 0;
+    switch (prec)
+    {
+    case TimeServer_PRECISION_SEC:
+        *val = ns / NS_IN_S;
+        break;
+    case TimeServer_PRECISION_MSEC:
+        *val = ns / NS_IN_MS;
+        break;
+    case TimeServer_PRECISION_USEC:
+        *val = ns / NS_IN_US;
+        break;
+    case TimeServer_PRECISION_NSEC:
+        *val = ns;
+        break;
+    default:
+        return OS_ERROR_INVALID_PARAMETER;
+    }
+
+    return OS_SUCCESS;
 }
