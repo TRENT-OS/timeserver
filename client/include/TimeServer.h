@@ -11,6 +11,8 @@
  */
 #pragma once
 
+#include "interfaces/if_OS_Timer.h"
+
 #include <stdint.h>
 
 typedef enum
@@ -24,23 +26,27 @@ typedef enum
 /**
  * @brief Sleep for some time
  *
+ * @param rpc (required) pointer to if_OS_Timer rpc struct
  * @param prec (required) precision of timer value
  * @param val (required) time to sleep
  */
 void
 TimeServer_sleep(
+    const if_OS_Timer_t*         rpc,
     const TimeServer_Precision_t prec,
     const uint64_t               val);
 
 /**
  * @brief Get the current system time
  *
+ * @param rpc (required) pointer to if_OS_Timer rpc struct
  * @param prec (required) precision of current time
  *
  * @return Timestamp in selected precision
  */
 uint64_t
 TimeServer_getTime(
+    const if_OS_Timer_t*         rpc,
     const TimeServer_Precision_t prec);
 
 /** @} */

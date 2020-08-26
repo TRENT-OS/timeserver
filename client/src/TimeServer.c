@@ -6,20 +6,18 @@
 
 #include <stdint.h>
 
-#include <camkes.h>
-
-// CAmkES does not generate this ... yet...
-seL4_CPtr timeServer_rpc_notification(
-    void);
-
 void
 TimeServer_sleep(
+    const if_OS_Timer_t*         rpc,
     const TimeServer_Precision_t prec,
     const uint64_t               val)
 {
     uint64_t ns;
-    seL4_Word badge;
-    seL4_CPtr notification = timeServer_rpc_notification();
+
+    if (NULL == rpc)
+    {
+        return;
+    }
 
     switch (prec)
     {
@@ -39,19 +37,25 @@ TimeServer_sleep(
         return;
     }
 
-    if (timeServer_rpc_oneshot_relative(0, ns) == OS_SUCCESS)
+    if (rpc->oneshot_relative(0, ns) == OS_SUCCESS)
     {
-        seL4_Wait(notification, &badge);
+        rpc->notify_wait();
     }
 }
 
 uint64_t
 TimeServer_getTime(
+    const if_OS_Timer_t*         rpc,
     const TimeServer_Precision_t prec)
 {
     uint64_t ns;
 
-    if (timeServer_rpc_time(&ns) == OS_SUCCESS)
+    if (NULL == rpc)
+    {
+        return 0;
+    }
+
+    if (rpc->time(&ns) == OS_SUCCESS)
     {
         switch (prec)
         {
