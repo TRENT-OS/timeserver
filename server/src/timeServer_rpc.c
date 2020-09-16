@@ -40,18 +40,6 @@
 
 #include "plat.h"
 
-#ifdef CONFIG_PLAT_ZYNQ7000
-    /* Please be aware that tests surfaced that the timer implementation in QEMU
-     * results in timings that deviate largely from the observed real time.
-     * Multiplying the requested ns with the following factor helps to improve the
-     * observed timer accuracy and since ZYNQ7000 is currently only supported in
-     * QEMU, it is valid to use this build target as a filter.
-     * The conversion factor is solely based on empirical tests done with varying
-     * conversion factors. */
-    #define FEATURE_CONVERSION_FACTOR
-    #define APPLY_NS_CONVERSION(_ns_)  ( ( (_ns_) / 100) * 3 )
-#endif
-
 /* ltimer for accessing timer devices */
 static ltimer_t ltimer;
 /* time manager for timeout multiplexing */
@@ -165,11 +153,8 @@ _oneshot_relative(
     int error = clientMux_lock();
     ZF_LOGF_IF(error, "Failed to lock time server");
 
-    #ifdef FEATURE_CONVERSION_FACTOR
-        ns = APPLY_NS_CONVERSION(ns);
-    #endif
-
     unsigned int id = getTimeToken(client, tid);
+
     error = tm_register_rel_cb(&timeManager, ns, id, signalClient,
                                (uintptr_t) id);
     ZF_LOGF_IF(error, "Failed to set timeout");
@@ -194,10 +179,6 @@ _oneshot_absolute(
 
     int error = clientMux_lock();
     ZF_LOGF_IF(error, "Failed to lock time server");
-
-    #ifdef FEATURE_CONVERSION_FACTOR
-        ns = APPLY_NS_CONVERSION(ns);
-    #endif
 
     unsigned int token = getTimeToken(client, tid);
 
@@ -231,15 +212,8 @@ _periodic(
     int error = clientMux_lock();
     ZF_LOGF_IF(error, "Failed to lock time server");
 
-    #ifdef FEATURE_CONVERSION_FACTOR
-        ns = APPLY_NS_CONVERSION(ns);
-        /* Following the underlying implementation, the ns passed need to be larger
-         * than zero, otherwise it will not result in a periodically triggered
-         * event */
-        ns = (ns > 0) ? ns : 1;
-    #endif
-
     unsigned int token = getTimeToken(client, tid);
+
     error = tm_register_periodic_cb(&timeManager, ns, 0, token, signalClient,
                                     (uintptr_t) token);
     ZF_LOGF_IF(error, "Failed to set timeout");
