@@ -1,24 +1,13 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
- *
- * This software may be distributed and modified according to the terms of
- * the BSD 2-Clause license. Note that NO WARRANTY is provided.
- * See "LICENSE_BSD2.txt" for details.
- *
- * @TAG(DATA61_BSD)
+ * Copyright (C) 2020, Hensoldt Cyber GmbH
  */
 
 /*
  *  TimeServer CAmkES Component
  *
- *  Copyright (C) 2020, Hensoldt Cyber GmbH
- *
- *
  *  to be used as:
  *
- *      #include "TimeServer/TimeServer.camkes"
+ *      #include "TimeServer/camkes/TimeServer.camkes"
  *
  *      TimeServer_COMPONENT_DECLARE(TimeServer_1)
  *      TimeServer_COMPONENT_DECLARE(TimeServer_2)
@@ -45,6 +34,13 @@ import <timers.camkes>;
 //------------------------------------------------------------------------------
 
 
+/*
+ * Declare the TimeServer with a given type name:
+ *
+ *      TimeServer_COMPONENT_DECLARE(
+ *          <name>
+ *      )
+ */
 #define TimeServer_COMPONENT_DECLARE( \
     _name_) \
     \
@@ -79,7 +75,7 @@ import <timers.camkes>;
 
 //------------------------------------------------------------------------------
 
-
+// Set a single connection; this is used internally
 #define TimeServer_CLIENT_CONNECTOR( \
     _inst_, \
     _unused_, \
@@ -99,6 +95,16 @@ import <timers.camkes>;
         );
 
 
+/*
+ * Assign all clients via this variadic macro:
+ *
+ *      TimeServer_INSTANCE_CONNECT_CLIENTS(
+ *          <instance>,
+ *          <client0>.<rpc>,  <client0>.<evt>,
+ *          <client1>.<rpc>,  <client1>.<evt>
+ *      )
+ *
+ */
 #define TimeServer_INSTANCE_CONNECT_CLIENTS( \
     _inst_, \
     ...) \
@@ -109,6 +115,14 @@ import <timers.camkes>;
 //------------------------------------------------------------------------------
 
 
+/*
+ * Configure the amount of timers a client can have:
+ *
+ *      TimeServer_INSTANCE_CONFIGURE(
+ *          <instance>, <timers>
+ *      )
+ *
+ */
 #define TimeServer_INSTANCE_CONFIGURE( \
     _inst_, \
     _num_) \
@@ -129,6 +143,17 @@ import <timers.camkes>;
     _rpc_ ## _attributes = _num_;
 
 
+/*
+ * Assign all clients a badge, in the order in which they are connected to the
+ * TimeServer instance via TimeServer_INSTANCE_CONNECT_CLIENTS():
+ *
+ *      TimeServer_CLIENT_ASSIGN_BADGE(
+ *          <client_rpc>, <ID>
+ *      )
+ *
+ * NOTE: IDs need to start at 1!
+ *
+ */
 #define TimeServer_CLIENT_ASSIGN_BADGE( \
     _client_rpc_, \
     _val_) \
@@ -136,6 +161,21 @@ import <timers.camkes>;
     _client_rpc_ ## _attributes = _val_;
 
 
+/*
+ * Assign badges to a list of clients; badge IDs will start at 1 and then be
+ * incremented. Make sure to pass clients in same order as they are passed
+ * in the TimeServer_INSTANCE_CONNECT_CLIENTS() macro:
+ *
+ *      TimeServer_CLIENT_ASSIGN_BADGES(
+ *          <client0_rpc>,
+ *          <client1_rpc>,
+ *          <client2_rpc>,
+ *           ...
+ *      )
+ *
+ * NOTE: Can take up to 8 clients.
+ *
+ */
 #define TimeServer_CLIENT_ASSIGN_BADGES( \
     ...) \
     \
