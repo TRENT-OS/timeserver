@@ -20,8 +20,8 @@
  *
  *      #include "TimeServer/TimeServer.camkes"
  *
- *      DECLARE_COMPONENT_TimeServer(TimeServer_1)
- *      DECLARE_COMPONENT_TimeServer(TimeServer_2)
+ *      TimeServer_COMPONENT_DECLARE(TimeServer_1)
+ *      TimeServer_COMPONENT_DECLARE(TimeServer_2)
  *
  */
 
@@ -31,19 +31,26 @@ import <if_OS_Timer.camkes>;
 
 import <timers.camkes>;
 
+#include "LibMacros/ForEach.h"
+
+
 //------------------------------------------------------------------------------
-// Component
+
 
 #ifdef HARDWARE_TIMER_COMPONENT
     HARDWARE_TIMER_COMPONENT
 #endif
 
-#define DECLARE_COMPONENT_TimeServer(               \
-    _name_)                                         \
-                                                    \
-    component _name_ {                              \
-        has   mutex             clientMux;          \
-                                                    \
+
+//------------------------------------------------------------------------------
+
+
+#define TimeServer_COMPONENT_DECLARE( \
+    _name_) \
+    \
+    component _name_ { \
+        has   mutex             clientMux; \
+        \
         emits TimerReady        timeServer_notify1; \
         emits TimerReady        timeServer_notify2; \
         emits TimerReady        timeServer_notify3; \
@@ -52,169 +59,84 @@ import <timers.camkes>;
         emits TimerReady        timeServer_notify6; \
         emits TimerReady        timeServer_notify7; \
         emits TimerReady        timeServer_notify8; \
-        provides if_OS_Timer    timeServer_rpc;     \
-                                                    \
-        attribute int timers_per_client = 4;        \
-        attribute int heap_size = 8192;             \
-                                                    \
-        HARDWARE_TIMER_INTERFACES                   \
-        HARDWARE_TIMER_ATTRIBUTES                   \
-                                                    \
-        composition {                               \
-            HARDWARE_TIMER_COMPOSITION              \
-        }                                           \
-                                                    \
-        configuration {                             \
-            HARDWARE_TIMER_CONFIG                   \
-        }                                           \
+        provides if_OS_Timer    timeServer_rpc; \
+        \
+        attribute int timers_per_client = 4; \
+        attribute int heap_size = 8192; \
+        \
+        HARDWARE_TIMER_INTERFACES \
+        HARDWARE_TIMER_ATTRIBUTES \
+        \
+        composition { \
+            HARDWARE_TIMER_COMPOSITION \
+        } \
+        \
+        configuration { \
+            HARDWARE_TIMER_CONFIG \
+        } \
     }
 
 
 //------------------------------------------------------------------------------
-// Instance Connection
 
-// In contrast to the usual FE macro construction, we need to have a separate
-// FE chain for every possible number of clients, because we need to make sure
-// that the first element in the list is always assigned the ID=1, then ID=2,
-// etc.
 
-// ------------------------------------------------------------
-#define TimeServer_FE_8_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,8)
-#define TimeServer_FE_8_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,7) \
-    TimeServer_FE_8_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,6) \
-    TimeServer_FE_8_2(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
-    TimeServer_FE_8_3(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
-    TimeServer_FE_8_4(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8_6(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
-    TimeServer_FE_8_5(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8_7(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_8_6(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_8(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_8_7(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_7_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,7)
-#define TimeServer_FE_7_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,6) \
-    TimeServer_FE_7_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_7_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
-    TimeServer_FE_7_2(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_7_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
-    TimeServer_FE_7_3(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_7_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
-    TimeServer_FE_7_4(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_7_6(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_7_5(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_7(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_7_6(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_6_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,6)
-#define TimeServer_FE_6_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,5) \
-    TimeServer_FE_6_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_6_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
-    TimeServer_FE_6_2(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_6_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
-    TimeServer_FE_6_3(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_6_5(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_6_4(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_6(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_6_5(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_5_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,5)
-#define TimeServer_FE_5_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,4) \
-    TimeServer_FE_5_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_5_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
-    TimeServer_FE_5_2(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_5_4(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_5_3(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_5(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_5_4(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_4_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,4)
-#define TimeServer_FE_4_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,3) \
-    TimeServer_FE_4_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_4_3(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_4_2(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_4(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_4_3(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_3_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,3)
-#define TimeServer_FE_3_2(WHAT, N,I,R,E, ...) WHAT(N,I,R,E,2) \
-    TimeServer_FE_3_1(WHAT, N,I, __VA_ARGS__)
-#define TimeServer_FE_3(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_3_2(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_2_1(WHAT, N,I,R,E)      WHAT(N,I,R,E,2)
-#define TimeServer_FE_2(WHAT, N,I,R,E, ...)   WHAT(N,I,R,E,1) \
-    TimeServer_FE_2_1(WHAT, N,I, __VA_ARGS__)
-// ------------------------------------------------------------
-#define TimeServer_FE_1(WHAT, N,I,R,E)        WHAT(N,I,R,E,1)
-
-#define TimeServer_GET_MACRO(_00,    \
-    _10,_11,_20,_21,_30,_31,_40,_41,    \
-    _50,_51,_60,_61,_70,_71,_80,_81,    \
-    NAME,...)                           \
-        TimeServer_ ## NAME
-
-#define TimeServer_FOR_EACH(action, _name_, _inst_, ...)        \
-  TimeServer_GET_MACRO(_0,__VA_ARGS__,                          \
-    FE_8,FE_8,FE_7,FE_7,FE_6,FE_6,FE_5,FE_5,                    \
-    FE_4,FE_4,FE_3,FE_3,FE_2,FE_2,FE_1,FE_1)                    \
-        (action,_name_,_inst_,__VA_ARGS__)
-
-// Set a single connection
-#define TimeServer_CONNECTION(                                  \
-    _name_,                                                     \
-    _inst_,                                                     \
-    _rpc_,                                                      \
-    _evt_,                                                      \
-    _num_)                                                      \
-                                                                \
-    connection seL4RPCCall                                      \
-        _name_ ## _ ## _inst_ ## _rpc ## _num_ (                \
-            from    _rpc_,                                      \
-            to      _inst_.timeServer_rpc                       \
-        );                                                      \
-    connection seL4NotificationNative                           \
-        _name_ ## _ ## _inst_ ## _evt ## _num_ (                \
-            from    _inst_.timeServer_notify ## _num_,          \
-            to      _evt_                                       \
+#define TimeServer_CLIENT_CONNECTOR( \
+    _inst_, \
+    _unused_, \
+    _rpc_, \
+    _evt_, \
+    _num_) \
+    \
+    connection seL4RPCCall \
+        _inst_ ## _rpc ## _num_ ( \
+            from    _rpc_, \
+            to      _inst_.timeServer_rpc \
+        ); \
+    connection seL4NotificationNative \
+        _inst_ ## _evt ## _num_ ( \
+            from    _inst_.timeServer_notify ## _num_, \
+            to      _evt_ \
         );
 
 
-/*
- * With the macro magic above we can use this macro with more than one
- * client, i.e.,
- *
- *      DECLARE_AND_CONNECT_INSTANCE_TimeServer(
- *          TimeServer,
- *          timeServer,
- *          client0.timeServer_rpc, client0.timeServer_notify,
- *          client1.timeServer_rpc, client1.timeServer_notify)
- */
-#define DECLARE_AND_CONNECT_INSTANCE_TimeServer(                            \
-    _name_,                                                                 \
-    _inst_,                                                                 \
-    ...)                                                                    \
-                                                                            \
-    component   _name_  _inst_;                                             \
-                                                                            \
-    TimeServer_FOR_EACH(TimeServer_CONNECTION, _name_, _inst_, __VA_ARGS__)
+#define TimeServer_INSTANCE_CONNECT_CLIENTS( \
+    _inst_, \
+    ...) \
+    \
+    FOR_EACH_2P(TimeServer_CLIENT_CONNECTOR,_inst_,UNUSED,__VA_ARGS__)
 
 
 //------------------------------------------------------------------------------
-// Configuration of instance
 
-#define CONFIGURE_INSTANCE_TimeServer(          \
-    _inst_,                                     \
-    _num_clients_)                              \
-                                                \
-    _inst_.timers_per_client = _num_clients_;
+
+#define TimeServer_INSTANCE_CONFIGURE( \
+    _inst_, \
+    _num_) \
+    \
+    _inst_.timers_per_client = _num_;
 
 
 //------------------------------------------------------------------------------
-// Assignments for instance
 
-#define ASSIGN_CLIENT_BADGE_TimeServer(_client_, _rpc_, _val_) \
-    _client_._rpc_ ## _attributes = _val_;
+
+// Assign a single badge; this is used internally
+#define TimeServer_BADGE_ASSIGNER( \
+    _unused0_, \
+    _unused1_, \
+    _rpc_, \
+    _num_) \
+    \
+    _rpc_ ## _attributes = _num_;
+
+
+#define TimeServer_CLIENT_ASSIGN_BADGE( \
+    _client_rpc_, \
+    _val_) \
+    \
+    _client_rpc_ ## _attributes = _val_;
+
+
+#define TimeServer_CLIENT_ASSIGN_BADGES( \
+    ...) \
+    \
+    FOR_EACH_1P(TimeServer_BADGE_ASSIGNER,UNUSED,UNUSED,__VA_ARGS__)
