@@ -9,8 +9,8 @@
  *
  *      #include "TimeServer/camkes/TimeServer.camkes"
  *
- *      TimeServer_COMPONENT_DECLARE(TimeServer_1)
- *      TimeServer_COMPONENT_DECLARE(TimeServer_2)
+ *      TimeServer_COMPONENT_DEFINE(TimeServer_1)
+ *      TimeServer_COMPONENT_DEFINE(TimeServer_2)
  *
  */
 
@@ -37,11 +37,11 @@ import <timers.camkes>;
 /*
  * Declare the TimeServer with a given type name:
  *
- *      TimeServer_COMPONENT_DECLARE(
+ *      TimeServer_COMPONENT_DEFINE(
  *          <name>
  *      )
  */
-#define TimeServer_COMPONENT_DECLARE( \
+#define TimeServer_COMPONENT_DEFINE( \
     _name_) \
     \
     component _name_ { \
