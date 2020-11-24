@@ -47,7 +47,7 @@ static time_manager_t timeManager;
 
 typedef struct
 {
-    unsigned int id;
+    unsigned int cid;
     uint32_t timers;
     void (*notify)(void);
 } TimeServer_Client;
@@ -86,15 +86,15 @@ currentTimeNs(
 
 static TimeServer_Client*
 getClient(
-    seL4_Word sender_id)
+    seL4_Word cid)
 {
     TimeServer_Client* client;
 
-    // Get client belonging to a sender_id; subtract 1 because we want to
+    // Get client belonging to a cid; subtract 1 because we want to
     // avoid using the 0 badge...
-    client = (sender_id > TIMESERVER_CLIENTS_MAX) || (sender_id <= 0) ? NULL :
-             (timerClients[sender_id - 1].id != sender_id) ? NULL :
-             &timerClients[sender_id - 1];
+    client = (cid > TIMESERVER_CLIENTS_MAX) || (cid <= 0) ? NULL :
+             (timerClients[cid - 1].cid != cid) ? NULL :
+             &timerClients[cid - 1];
 
     return client;
 }
@@ -104,7 +104,7 @@ getTimeToken(
     TimeServer_Client* client,
     int                tid)
 {
-    return (unsigned int) client->id * timers_per_client + tid;
+    return (unsigned int) client->cid * timers_per_client + tid;
 }
 
 static int
