@@ -40,6 +40,18 @@
 
 #include "plat.h"
 
+// Get a client when called via RPC
+#define GET_CLIENT(cli, cid) \
+    do { \
+        if ((cli = getClient(cid)) == NULL) \
+        { \
+            Debug_LOG_ERROR("Could not get state for client with client ID %u, " \
+                            "the badge number is most likely not properly " \
+                            "configured", cid); \
+            return OS_ERROR_NOT_FOUND; \
+        } \
+    } while(0)
+
 /* ltimer for accessing timer devices */
 static ltimer_t ltimer;
 /* time manager for timeout multiplexing */
@@ -280,12 +292,6 @@ _time(
 }
 
 // Public Functions -----------------------------------------------------------
-
-#define GET_CLIENT(cli, cid)                                                        \
-    if ((cli = getClient(cid)) == NULL) {                                           \
-        Debug_LOG_ERROR("Could not get corresponding client state (cid=%i)", cid);  \
-        return OS_ERROR_NOT_FOUND;                                                  \
-    }
 
 OS_Error_t
 timeServer_rpc_oneshot_relative(
