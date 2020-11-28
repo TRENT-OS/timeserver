@@ -16,6 +16,8 @@
 
 #pragma once
 
+import <std_connector.camkes>;
+
 #include <plat/timers.h>
 
 import <if_OS_Timer.camkes>;
