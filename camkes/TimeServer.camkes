@@ -17,27 +17,19 @@
 #pragma once
 
 import <std_connector.camkes>;
-
-#include <plat/timers.h>
-
 import <if_OS_Timer.camkes>;
-
 import <timers.camkes>;
+
+// platforms may have specific imports and components
+#include "plat/timers.h"
+#ifdef HARDWARE_TIMER_COMPONENT
+    HARDWARE_TIMER_COMPONENT
+#endif
 
 #include "LibMacros/ForEach.h"
 
 
 //------------------------------------------------------------------------------
-
-
-#ifdef HARDWARE_TIMER_COMPONENT
-    HARDWARE_TIMER_COMPONENT
-#endif
-
-
-//------------------------------------------------------------------------------
-
-
 /*
  * Declare the TimeServer with a given type name:
  *
