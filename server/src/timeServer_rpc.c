@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <sel4/sel4.h>
 #include <sel4/arch/constants.h>
 #include <camkes.h>
@@ -46,7 +47,7 @@
     do { \
         if ((cli = getClient(cid)) == NULL) \
         { \
-            Debug_LOG_ERROR("Could not get state for client with client ID %u, " \
+            Debug_LOG_ERROR("Could not get state for client with client ID %"PRIuMAX", " \
                             "the badge number is most likely not properly " \
                             "configured", cid); \
             return OS_ERROR_NOT_FOUND; \
