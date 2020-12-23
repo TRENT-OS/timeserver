@@ -36,7 +36,7 @@
 #include <camkes/io.h>
 
 #include "OS_Error.h"
-#include "LibDebug/Debug.h"
+#include "lib_debug/Debug.h"
 
 #include "plat.h"
 

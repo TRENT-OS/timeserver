@@ -73,7 +73,8 @@ function(TimeServer_DeclareCAmkESComponent
             -Wno-unused-const-variable
         LIBS
             os_core_api
-            os_libs
+            lib_debug
+            lib_macros
     )
 
     #---------------------------------------------------------------------------
