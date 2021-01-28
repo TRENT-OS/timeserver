@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.17)
-
 #
 # TimeServer
 #
@@ -8,6 +6,7 @@ cmake_minimum_required(VERSION 3.17)
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+cmake_minimum_required(VERSION 3.17)
 
 #-------------------------------------------------------------------------------
 #
