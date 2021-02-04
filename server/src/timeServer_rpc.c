@@ -1,4 +1,11 @@
 /*
+ * TimeServer
+ *
+ * Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+/*
  * Copyright 2017, Data61
  * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
  * ABN 41 687 119 230.
@@ -8,14 +15,6 @@
  * See "LICENSE_BSD2.txt" for details.
  *
  * @TAG(DATA61_BSD)
- */
-
-/*
- * TimeServer
- *
- * Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
- *
- * SPDX-License-Identifier: BSD-2-Clause
  */
 
 #include <autoconf.h>

@@ -1,16 +1,17 @@
-/**
+/*
  * Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
- *
  * SPDX-License-Identifier: BSD-3-Clause
- *
+ */
+
+/**
  * @defgroup TimeServer component
  * @{
  *
  * @file
  *
  * @brief TimeServer convenience functions to hide CAmkES details
- *
  */
+
 #pragma once
 
 #include "interfaces/if_OS_Timer.h"
