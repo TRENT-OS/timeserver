@@ -1,9 +1,0 @@
-2021-01-20 HENSOLDT Cyber GmbH
-
-    * src/timeServer_rpc.c
-        (formatting):            Apply our formatting.
-        (features):              Limit to 8 clients.
-        (refactoring):           Use OS_Error_t, rename server according to
-                                 interface.
-    * include/plat/bcm2837/plat/timers.h
-        (added):                 Support the platform RPi3B+.
