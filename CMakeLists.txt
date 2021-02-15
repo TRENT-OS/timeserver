@@ -21,6 +21,14 @@ function(TimeServer_DeclareCAmkESComponent
     name
 )
 
+    if(NOT CAmkESDTS)
+        message(FATAL "CAmkESDTS not enabled")
+    endif()
+
+    if(NOT CAmkESCPP)
+        message(FATAL "CAmkESCPP not enabled")
+    endif()
+
     if(KernelArchARM)
         set(CAmkESDTS ON CACHE BOOL "" FORCE)
     endif()
