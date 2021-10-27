@@ -6,6 +6,17 @@ the TRENTOS SDK will be documented in this file.
 For more details it is recommended to compare the 3rd party module at hand with
 the previous versions of the TRENTOS SDK or the baseline version.
 
+## [1.3]
+
+### Added
+
+- Support bcm2711.
+
+### Fixed
+
+- Use the SEL4_PRI_word macro instead of %u modifier to account for 64-bit arch
+cases.
+
 ## [1.1]
 
 ### Changed
