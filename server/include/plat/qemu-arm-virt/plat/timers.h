@@ -1,4 +1,5 @@
 /*
+ * Copyright 2022, HENSOLDT Cyber GmbH
  * Copyright 2019, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
@@ -6,25 +7,21 @@
 
 #pragma once
 
-#define HARDWARE_TIMER_COMPONENT \
-    component HWTimer { \
-        hardware; \
-        emits TimerIRQ irq; \
-    }
+/* no need to define a HARDWARE_TIMER_COMPONENT */
 
 #define HARDWARE_TIMER_INTERFACES \
-    consumes TimerIRQ hwtimer_irq;
+    emits Dummy dummy_source; \
+    consumes Dummy timer_sp804;
 
 /* no attributes */
 #define HARDWARE_TIMER_ATTRIBUTES
 
 #define HARDWARE_TIMER_COMPOSITION \
-        component HWTimer hwtimer; \
-        connection seL4HardwareInterrupt hwtimer_irq(from hwtimer.irq, to hwtimer_irq);
+    connection seL4DTBHardware timer_conn(from dummy_source, to timer_sp804);
 
 #define HARDWARE_TIMER_CONFIG \
-    hwtimer.irq_irq_number = 30; \
-    hwtimer.irq_irq_type = "arm";
+    timer_sp804.dtb = dtb({"path" : "/sp804@b000000"}); \
+    timer_sp804.generate_interrupts = 1;
 
 /* no platform interfaces */
 #define HARDWARE_TIMER_PLAT_INTERFACES
