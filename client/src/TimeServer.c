@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
- * SPDX-License-Identifier: BSD-3-Clause
+ * Copyright (C) 2020-2024, HENSOLDT Cyber GmbH
+ * SPDX-License-Identifier: BSD-2-Clause
  */
 
 #include "OS_Error.h"
